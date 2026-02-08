@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String   @map("full_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  subjects            Subject[]
+  studySessions       StudySession[]
+  userPreferences     UserPreferences?
+  cognitiveLoadLogs   CognitiveLoadLog[]
+
+  @@map("users")
+}
+
+model Subject {
+  id                   String   @id @default(uuid())
+  userId               String   @map("user_id")
+  name                 String
+  difficultyLevel      Int      @map("difficulty_level") // 1-5
+  totalHoursRequired   Float    @map("total_hours_required")
+  hoursCompleted       Float    @default(0) @map("hours_completed")
+  deadline             DateTime?
+  color                String   @default("#3B82F6")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topics               Topic[]
+  studySessions        StudySession[]
+  prerequisites        Prerequisite[] @relation("SubjectPrerequisites")
+  dependentSubjects    Prerequisite[] @relation("PrerequisiteSubjects")
+
+  @@map("subjects")
+}
+
+model Prerequisite {
+  id                     String   @id @default(uuid())
+  subjectId              String   @map("subject_id")
+  prerequisiteSubjectId  String   @map("prerequisite_subject_id")
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  subject                Subject  @relation("SubjectPrerequisites", fields: [subjectId], references: [id], onDelete: Cascade)
+  prerequisiteSubject    Subject  @relation("PrerequisiteSubjects", fields: [prerequisiteSubjectId], references: [id], onDelete: Cascade)
+
+  @@unique([subjectId, prerequisiteSubjectId])
+  @@map("prerequisites")
+}
+
+model Topic {
+  id              String   @id @default(uuid())
+  subjectId       String   @map("subject_id")
+  name            String
+  estimatedHours  Float    @map("estimated_hours")
+  isCompleted     Boolean  @default(false) @map("is_completed")
+  order           Int
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  subject         Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  studySessions   StudySession[]
+
+  @@map("topics")
+}
+
+enum SessionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  MISSED
+}
+
+model StudySession {
+  id              String        @id @default(uuid())
+  userId          String        @map("user_id")
+  subjectId       String        @map("subject_id")
+  topicId         String?       @map("topic_id")
+  scheduledStart  DateTime      @map("scheduled_start")
+  scheduledEnd    DateTime      @map("scheduled_end")
+  actualStart     DateTime?     @map("actual_start")
+  actualEnd       DateTime?     @map("actual_end")
+  status          SessionStatus @default(SCHEDULED)
+  focusScore      Int?          @map("focus_score") // 1-10
+  notes           String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject         Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  topic           Topic?        @relation(fields: [topicId], references: [id], onDelete: SetNull)
+
+  @@map("study_sessions")
+}
+
+enum LearningPace {
+  SLOW
+  MEDIUM
+  FAST
+}
+
+model UserPreferences {
+  id                    String       @id @default(uuid())
+  userId                String       @unique @map("user_id")
+  studyHoursPerDay      Float        @default(4) @map("study_hours_per_day")
+  preferredStudyTimes   Json         @default("[]") @map("preferred_study_times") // ["morning", "afternoon", "evening"]
+  breakDuration         Int          @default(15) @map("break_duration") // minutes
+  maxContinuousStudy    Int          @default(90) @map("max_continuous_study") // minutes
+  learningPace          LearningPace @default(MEDIUM) @map("learning_pace")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  user                  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model CognitiveLoadLog {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  date            DateTime @db.Date
+  totalLoadScore  Float    @map("total_load_score")
+  subjectsStudied Json     @map("subjects_studied") // Array of subject IDs
+  notes           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("cognitive_load_logs")
+}
