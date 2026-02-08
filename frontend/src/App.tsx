@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import SubjectsPage from './pages/SubjectsPage';
 import SubjectDetailPage from './pages/SubjectDetailPage'; // ADD THIS
+import PreferencesPage from './pages/PreferencesPage'; 
 
 // Protected Route Component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -67,6 +68,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SubjectDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/preferences"
+          element={
+            <ProtectedRoute>
+              <PreferencesPage />
             </ProtectedRoute>
           }
         />

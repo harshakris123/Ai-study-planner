@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, BookOpen, Clock, TrendingUp, Target, Plus } from 'lucide-react';
+import { LogOut, BookOpen, Clock, TrendingUp, Target, Plus, Settings } from 'lucide-react';
 import { subjectService } from '@/services/subjectService';
 import { Subject, SubjectStats } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -9,6 +9,7 @@ import StatsCard from '@/components/dashboard/StatsCard';
 import UpcomingDeadlines from '@/components/dashboard/UpcomingDeadlines';
 import ProgressChart from '@/components/dashboard/ProgressChart';
 import RecentSubjects from '@/components/dashboard/RecentSubjects';
+
 
 export default function DashboardPage() {
   const user = useAuthStore((state) => state.user);
@@ -63,6 +64,13 @@ export default function DashboardPage() {
               <p className="text-gray-600 mt-1">Welcome back, {user?.fullName}!</p>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/preferences')}
+                className="btn-outline flex items-center gap-2"
+              >
+                <Settings size={20} />
+                Preferences
+              </button>
               <button
                 onClick={() => navigate('/subjects')}
                 className="btn-outline flex items-center gap-2"
