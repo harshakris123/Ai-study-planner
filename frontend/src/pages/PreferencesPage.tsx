@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, RotateCcw, Settings } from 'lucide-react';
 import { UserPreferences, UpdatePreferencesRequest } from '@/types';
 import api from '@/services/api';
+import AppLayout from '@/components/layout/AppLayout';
+import { showSuccess, showError } from '@/utils/toast';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function PreferencesPage() {
@@ -46,10 +48,10 @@ export default function PreferencesPage() {
     try {
       setSaving(true);
       await api.put('/preferences', formData);
-      alert('Preferences saved successfully!');
+      showSuccess('Preferences saved successfully!');
       navigate('/dashboard');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to save preferences');
+      showError(error.response?.data?.error || 'Failed to save preferences');
     } finally {
       setSaving(false);
     }
@@ -62,9 +64,9 @@ export default function PreferencesPage() {
       setSaving(true);
       await api.post('/preferences/reset');
       fetchPreferences();
-      alert('Preferences reset to defaults!');
+      showSuccess('Preferences reset to defaults!');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to reset preferences');
+      showError(error.response?.data?.error || 'Failed to reset preferences');
     } finally {
       setSaving(false);
     }
@@ -97,9 +99,10 @@ export default function PreferencesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <AppLayout>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <button
@@ -306,5 +309,6 @@ export default function PreferencesPage() {
         </div>
       </main>
     </div>
+    </AppLayout>
   );
 }

@@ -18,6 +18,8 @@ import TopicList from '@/components/topics/TopicList';
 import TopicForm from '@/components/topics/TopicForm';
 import BulkTopicForm from '@/components/topics/BulkTopicForm';
 import { format } from 'date-fns';
+import AppLayout from '@/components/layout/AppLayout';
+import { showSuccess, showError } from '@/utils/toast';
 
 export default function SubjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -67,8 +69,9 @@ export default function SubjectDetailPage() {
       });
       setTopics([...topics, response.topic]);
       setModalOpen(false);
+      showSuccess('Topic created successfully');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create topic');
+      showError(error.response?.data?.error || 'Failed to create topic');
     } finally {
       setSubmitting(false);
     }
@@ -85,8 +88,9 @@ export default function SubjectDetailPage() {
       });
       setTopics(response.topics);
       setBulkModalOpen(false);
+      showSuccess('Topics created successfully');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to create topics');
+      showError(error.response?.data?.error || 'Failed to create topics');
     } finally {
       setSubmitting(false);
     }
@@ -106,8 +110,9 @@ export default function SubjectDetailPage() {
       );
       setModalOpen(false);
       setEditingTopic(undefined);
+      showSuccess('Topic updated successfully');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to update topic');
+      showError(error.response?.data?.error || 'Failed to update topic');
     } finally {
       setSubmitting(false);
     }
@@ -144,9 +149,10 @@ export default function SubjectDetailPage() {
           ? Math.round((newHoursCompleted / subject.totalHoursRequired) * 100)
           : 0,
       });
+      showSuccess('Topic marked as ' + (updatedTopic.isCompleted ? 'completed' : 'incomplete'));
     }
   } catch (error: any) {
-    alert(error.response?.data?.error || 'Failed to update topic');
+    showError(error.response?.data?.error || 'Failed to update topic');
   }
 };
 
@@ -155,8 +161,9 @@ export default function SubjectDetailPage() {
       await topicService.delete(topic.id);
       setTopics(topics.filter((t) => t.id !== topic.id));
       setDeleteConfirm(null);
+      showSuccess('Topic deleted successfully');
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to delete topic');
+      showError(error.response?.data?.error || 'Failed to delete topic');
     }
   };
 
@@ -174,7 +181,8 @@ export default function SubjectDetailPage() {
     totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AppLayout>
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -374,5 +382,6 @@ export default function SubjectDetailPage() {
         </div>
       </Modal>
     </div>
+    </AppLayout>
   );
 }
