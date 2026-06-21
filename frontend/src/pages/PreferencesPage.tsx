@@ -5,6 +5,7 @@ import { UserPreferences, UpdatePreferencesRequest } from '@/types';
 import api from '@/services/api';
 import AppLayout from '@/components/layout/AppLayout';
 import { showSuccess, showError } from '@/utils/toast';
+import { getApiErrorMessage } from '@/utils/error';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function PreferencesPage() {
@@ -50,8 +51,11 @@ export default function PreferencesPage() {
       await api.put('/preferences', formData);
       showSuccess('Preferences saved successfully!');
       navigate('/dashboard');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to save preferences');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to save preferences'));
     } finally {
       setSaving(false);
     }
@@ -65,8 +69,11 @@ export default function PreferencesPage() {
       await api.post('/preferences/reset');
       fetchPreferences();
       showSuccess('Preferences reset to defaults!');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to reset preferences');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to reset preferences'));
     } finally {
       setSaving(false);
     }

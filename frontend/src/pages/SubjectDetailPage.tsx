@@ -20,6 +20,7 @@ import BulkTopicForm from '@/components/topics/BulkTopicForm';
 import { format } from 'date-fns';
 import AppLayout from '@/components/layout/AppLayout';
 import { showSuccess, showError } from '@/utils/toast';
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function SubjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -70,8 +71,11 @@ export default function SubjectDetailPage() {
       setTopics([...topics, response.topic]);
       setModalOpen(false);
       showSuccess('Topic created successfully');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to create topic');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to create topic'));
     } finally {
       setSubmitting(false);
     }
@@ -89,8 +93,11 @@ export default function SubjectDetailPage() {
       setTopics(response.topics);
       setBulkModalOpen(false);
       showSuccess('Topics created successfully');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to create topics');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to create topics'));
     } finally {
       setSubmitting(false);
     }
@@ -111,8 +118,11 @@ export default function SubjectDetailPage() {
       setModalOpen(false);
       setEditingTopic(undefined);
       showSuccess('Topic updated successfully');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to update topic');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to update topic'));
     } finally {
       setSubmitting(false);
     }
@@ -151,8 +161,11 @@ export default function SubjectDetailPage() {
       });
       showSuccess('Topic marked as ' + (updatedTopic.isCompleted ? 'completed' : 'incomplete'));
     }
-  } catch (error: any) {
-    showError(error.response?.data?.error || 'Failed to update topic');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+    showError(getApiErrorMessage(error, 'Failed to update topic'));
   }
 };
 
@@ -162,8 +175,11 @@ export default function SubjectDetailPage() {
       setTopics(topics.filter((t) => t.id !== topic.id));
       setDeleteConfirm(null);
       showSuccess('Topic deleted successfully');
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to delete topic');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to delete topic'));
     }
   };
 

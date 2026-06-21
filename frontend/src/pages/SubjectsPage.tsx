@@ -9,6 +9,7 @@ import SubjectCard from '@/components/subjects/SubjectCard';
 import SubjectForm from '@/components/subjects/SubjectForm';
 import AppLayout from '@/components/layout/AppLayout'; // ADD THIS
 import { showSuccess, showError } from '@/utils/toast'; // ADD THIS
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function SubjectsPage() {
   const { subjects, setSubjects, addSubject, updateSubject, removeSubject } =
@@ -44,8 +45,11 @@ export default function SubjectsPage() {
       addSubject(response.subject);
       setModalOpen(false);
       showSuccess('Subject created successfully!'); // CHANGED
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to create subject'); // CHANGED
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to create subject')); // CHANGED
     } finally {
       setSubmitting(false);
     }
@@ -61,8 +65,11 @@ export default function SubjectsPage() {
       setModalOpen(false);
       setEditingSubject(undefined);
       showSuccess('Subject updated successfully!'); // CHANGED
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to update subject'); // CHANGED
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to update subject')); // CHANGED
     } finally {
       setSubmitting(false);
     }
@@ -74,8 +81,11 @@ export default function SubjectsPage() {
       removeSubject(subject.id);
       setDeleteConfirm(null);
       showSuccess('Subject deleted successfully!'); // CHANGED
-    } catch (error: any) {
-      showError(error.response?.data?.error || 'Failed to delete subject'); // CHANGED
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      showError(getApiErrorMessage(error, 'Failed to delete subject')); // CHANGED
     }
   };
 

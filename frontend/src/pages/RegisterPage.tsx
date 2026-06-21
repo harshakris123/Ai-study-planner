@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
 import { BookOpen } from 'lucide-react';
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -41,8 +42,11 @@ export default function RegisterPage() {
       });
       setAuth(response.user, response.token);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      setError(getApiErrorMessage(error, 'Registration failed'));
     } finally {
       setLoading(false);
     }

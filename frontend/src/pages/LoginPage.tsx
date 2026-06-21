@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { authService } from '@/services/authService';
 import { BookOpen } from 'lucide-react';
+import { getApiErrorMessage } from '@/utils/error';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -24,8 +25,11 @@ export default function LoginPage() {
       const response = await authService.login(formData);
       setAuth(response.user, response.token);
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+      setError(getApiErrorMessage(error, 'Login failed'));
     } finally {
       setLoading(false);
     }

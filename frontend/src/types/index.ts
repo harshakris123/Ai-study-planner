@@ -161,3 +161,31 @@ export interface SessionStats {
   averageFocusScore: number;
   completionRate: number;
 }
+
+export interface CognitiveLoadResponse {
+  loadScore: number;
+  state: 'Fresh' | 'Normal' | 'Fatigued' | 'Burnout Risk';
+  totalStudyHours?: number;
+  avgDifficulty?: number;
+  avgFocus?: number;
+  sessionCount?: number;
+}
+
+export interface AdaptiveAdjustments {
+  loadScore: number;
+  loadState: string;
+  originalDailyBudget: number;
+  adjustedDailyBudget: number;
+  originalBreakMinutes: number;
+  adjustedBreakMinutes: number;
+  difficultyThreshold: number;
+}
+
+export interface ScheduleResponse {
+  sessions: StudySession[];
+  totalSessions: number;
+  generatedMinutes: number;
+  unallocatedMinutes: number;
+  warning: string | null;
+  adaptiveAdjustments: AdaptiveAdjustments;
+}

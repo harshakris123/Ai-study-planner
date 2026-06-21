@@ -6,6 +6,7 @@ import subjectRoutes from './routes/subject.routes';
 import topicRoutes from './routes/topic.routes';
 import preferencesRoutes from './routes/preferences.routes'; // ADD
 import sessionRoutes from './routes/session.routes'; // ADD
+import aiRoutes from './routes/ai.routes';
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,7 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/topics', topicRoutes);
 app.use('/api/preferences', preferencesRoutes); // ADD
 app.use('/api/sessions', sessionRoutes); // ADD
+app.use("/api/ai", aiRoutes);
 
 // Basic test route
 app.get('/', (req: Request, res: Response) => {
